@@ -1,5 +1,6 @@
 package Storage.UI;
 
+import Storage.Data.MockData;
 import Storage.Model.Order;
 import Storage.Model.StorageManager;
 
@@ -11,6 +12,8 @@ public class MainForm extends JPanel {
     private StorageManager manager = new StorageManager();
     private ArrayList<JTextField> textBoxes = new ArrayList<JTextField>();
     private ArrayList<JTextField> orderTextBoxes = new ArrayList<JTextField>();
+
+    private String newline = System.getProperty("line.separator");
 
     public void drawItems(Graphics g, int startYPoint) {
         int drawingParam = 80;
@@ -32,7 +35,6 @@ public class MainForm extends JPanel {
             newButton.addActionListener(e -> {
                 String buttonNmae = ((JButton)e.getSource()).getName();
                 Order newOrder = getNewOrder(buttonNmae);
-                //manager.processOrder(getNewOrder(buttonNmae));
                     Animation animation =  new Animation(
                             panel,
                             ((JButton)e.getSource()).getLocation().x + ((JButton)e.getSource()).getWidth()/2,
@@ -45,8 +47,8 @@ public class MainForm extends JPanel {
 
             JTextField newTextBox = new JTextField();
             newTextBox.setName(Integer.toString(i));
+            newTextBox.setText("temp" + newline + "test");
             newTextBox.setBounds(drawingParam, 590, 100,30);
-            textBoxes.add(newTextBox);
             this.add(newTextBox);
 
             JTextField newOrderTextBox = new JTextField();
@@ -84,6 +86,7 @@ public class MainForm extends JPanel {
     }
 
     public MainForm(){
+        manager.setManufacturers(MockData.getManufacturers());
         this.setLayout(null);
         createCustomersControls();
     }
@@ -103,5 +106,4 @@ public class MainForm extends JPanel {
         frame.setSize(700, 800);
         frame.setVisible(true);
     }
-
 }

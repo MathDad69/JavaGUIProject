@@ -5,15 +5,6 @@ import java.util.ArrayList;
 public class StorageManager {
     private ArrayList<Manufacturer> manufacturers = new ArrayList<Manufacturer>();
 
-    public StorageManager() {
-        manufacturers.add(new Manufacturer("test1"));
-        manufacturers.add(new Manufacturer("test2"));
-
-        manufacturers.get(0).getProducts().put("Koks1",12);
-        manufacturers.get(1).getProducts().put("Koks1",2);
-        manufacturers.get(1).getProducts().put("Koks2",4);
-    }
-
     public void Run() {
         Order newOrder = new Order("Koks1", 5);
 
