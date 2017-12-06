@@ -3,7 +3,13 @@ package Storage.Model;
 import java.util.ArrayList;
 
 public class StorageManager {
-    private ArrayList<Manufacturer> manufacturers = new ArrayList<Manufacturer>();
+    private ArrayList<Manufacturer> manufacturers;
+
+    private static StorageManager manager = new StorageManager();
+
+    public static StorageManager getManager() {
+        return manager;
+    }
 
     public void Run() {
         Order newOrder = new Order("Koks1", 5);

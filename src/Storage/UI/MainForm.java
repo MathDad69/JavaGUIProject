@@ -1,15 +1,16 @@
 package Storage.UI;
 
 import Storage.Data.MockData;
+import Storage.Model.Manufacturer;
 import Storage.Model.Order;
 import Storage.Model.StorageManager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class MainForm extends JPanel {
-    private StorageManager manager = new StorageManager();
     private ArrayList<JTextField> textBoxes = new ArrayList<JTextField>();
     private ArrayList<JTextField> orderTextBoxes = new ArrayList<JTextField>();
 
@@ -35,20 +36,30 @@ public class MainForm extends JPanel {
             newButton.addActionListener(e -> {
                 String buttonNmae = ((JButton)e.getSource()).getName();
                 Order newOrder = getNewOrder(buttonNmae);
-                    Animation animation =  new Animation(
-                            panel,
-                            ((JButton)e.getSource()).getLocation().x + ((JButton)e.getSource()).getWidth()/2,
-                            ((JButton)e.getSource()).getLocation().y,
-                            330,
-                            270,
-                            newOrder.getProductName() + " " + newOrder.getAmount());
+                StorageManager.getManager().processOrder(getNewOrder(buttonNmae));
+                Animation animation =  new Animation(
+                        panel,
+                        ((JButton)e.getSource()).getLocation().x + ((JButton)e.getSource()).getWidth()/2,
+                        ((JButton)e.getSource()).getLocation().y,
+                        330,
+                        270,
+                        newOrder.getProductName() + " "  + newOrder.getAmount(),
+                        StorageManager.getManager(),
+                        true,
+                        getNewOrder(buttonNmae));
             });
             this.add(newButton);
 
+            JTextArea newTextArea = new JTextArea();
+            newTextArea.setName(Integer.toString(i));
+            newTextArea.setEditable(false);
+            newTextArea.setBounds(drawingParam, 20, 100,30);
+            this.add(newTextArea);
+
             JTextField newTextBox = new JTextField();
             newTextBox.setName(Integer.toString(i));
-            newTextBox.setText("temp" + newline + "test");
             newTextBox.setBounds(drawingParam, 590, 100,30);
+            textBoxes.add(newTextBox);
             this.add(newTextBox);
 
             JTextField newOrderTextBox = new JTextField();
@@ -79,6 +90,27 @@ public class MainForm extends JPanel {
         }
     }
 
+    public void drawManufacturersNames(Graphics g) {
+        int drawingParam = 120;
+        g.setColor(Color.BLACK);
+
+        for (Manufacturer entry : StorageManager.getManager().getManufacturers()) {
+            g.drawString(entry.getManufacturerName(),drawingParam, 120);
+            drawingParam += 150;
+        }
+    }
+
+    public void drawCustomersNames(Graphics g) {
+        ArrayList<String> customers = MockData.getCustomersNames();
+        int drawingParam = 120;
+        g.setColor(Color.BLACK);
+
+        for (String entry : customers) {
+            g.drawString(entry, drawingParam, 520);
+            drawingParam += 150;
+        }
+    }
+
     private Order getNewOrder(String buttonNumber) {
         JTextField textBox = textBoxes.get(Integer.valueOf(buttonNumber));
         JTextField orderTextBox = orderTextBoxes.get(Integer.valueOf(buttonNumber));
@@ -86,7 +118,7 @@ public class MainForm extends JPanel {
     }
 
     public MainForm(){
-        manager.setManufacturers(MockData.getManufacturers());
+        StorageManager.getManager().setManufacturers(MockData.getManufacturers());
         this.setLayout(null);
         createCustomersControls();
     }
@@ -95,8 +127,10 @@ public class MainForm extends JPanel {
         super.paintComponent(g);
         drawStorage(g);
         drawItems(g, 500);
-        drawItems(g, 50);
+        drawItems(g, 100);
         drawLabels(g);
+        drawManufacturersNames(g);
+        drawCustomersNames(g);
     }
 
     public static void main(String[] args) {

@@ -28,7 +28,12 @@ public class Manufacturer {
     }
 
     public int getProductAmount(String productName) {
-        return products.get(productName);
+        try {
+            return products.get(productName);
+        }
+        catch (Exception ex) {
+            return 0;
+        }
     }
 
     public void deliverProduct(String productName, int amount) {
