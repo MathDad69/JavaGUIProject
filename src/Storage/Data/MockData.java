@@ -23,7 +23,7 @@ public final class MockData {
 
         manufacturers.get(3).getProducts().put("Koks3", 42);
         manufacturers.get(3).getProducts().put("Koks2", 22);
-        manufacturers.get(3).getProducts().put("Kok4s", 12);
+        manufacturers.get(3).getProducts().put("Koks4", 12);
 
         return manufacturers;
     }

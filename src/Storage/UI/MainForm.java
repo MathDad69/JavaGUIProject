@@ -13,6 +13,7 @@ import java.util.Map;
 public class MainForm extends JPanel {
     private ArrayList<JTextField> textBoxes = new ArrayList<JTextField>();
     private ArrayList<JTextField> orderTextBoxes = new ArrayList<JTextField>();
+    private ArrayList<JTextArea> productsTextBoxes = new ArrayList<JTextArea>();
 
     private String newline = System.getProperty("line.separator");
 
@@ -36,14 +37,13 @@ public class MainForm extends JPanel {
             newButton.addActionListener(e -> {
                 String buttonNmae = ((JButton)e.getSource()).getName();
                 Order newOrder = getNewOrder(buttonNmae);
-                StorageManager.getManager().processOrder(getNewOrder(buttonNmae));
                 Animation animation =  new Animation(
                         panel,
                         ((JButton)e.getSource()).getLocation().x + ((JButton)e.getSource()).getWidth()/2,
                         ((JButton)e.getSource()).getLocation().y,
                         330,
                         270,
-                        newOrder.getProductName() + " "  + newOrder.getAmount(),
+                        newOrder.getProductName() + " : "  + newOrder.getAmount(),
                         StorageManager.getManager(),
                         true,
                         getNewOrder(buttonNmae));
@@ -53,7 +53,15 @@ public class MainForm extends JPanel {
             JTextArea newTextArea = new JTextArea();
             newTextArea.setName(Integer.toString(i));
             newTextArea.setEditable(false);
-            newTextArea.setBounds(drawingParam, 20, 100,30);
+            newTextArea.setBounds(drawingParam, 20, 100,50);
+
+            String result = "";
+            for ( Map.Entry<String, Integer> entry : StorageManager.getManager().getManufacturers().get(i).getProducts().entrySet() ) {
+                result = result + entry.getKey() + " : " + entry.getValue() + "\n";
+            }
+            newTextArea.setText(result);
+
+            productsTextBoxes.add(newTextArea);
             this.add(newTextArea);
 
             JTextField newTextBox = new JTextField();
@@ -109,6 +117,10 @@ public class MainForm extends JPanel {
             g.drawString(entry, drawingParam, 520);
             drawingParam += 150;
         }
+    }
+
+    public void drawManufacturerProducts() {
+
     }
 
     private Order getNewOrder(String buttonNumber) {

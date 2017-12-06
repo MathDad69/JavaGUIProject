@@ -28,13 +28,13 @@ public class StorageManager {
 
             if (newOrder.getAmount() <= total) {
                 new Thread(() -> {
-                    getItemsFromManufacturers(newOrder);
+                    deliverItemsFromManufacturers(newOrder);
                 }).start();
             }
         }
     }
 
-    private void getItemsFromManufacturers(Order newOrder) {
+    private void deliverItemsFromManufacturers(Order newOrder) {
         for (int i = 0; i < manufacturers.size(); i++) {
             synchronized(this){
                 manufacturers.get(i).deliverProduct(newOrder.getProductName(), newOrder.getAmount());

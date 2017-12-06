@@ -24,11 +24,11 @@ public class Animation {
     private  void InitTimer(JPanel jPanel, StorageManager manager, boolean EndAnimationFlag, Order order){
         _timer = new Timer(5, e -> {
             if(!TryMove()) {
+                jPanel.remove(component);
                 if(EndAnimationFlag){
                     manager.processOrder(order);
                 }else{
                 }
-                jPanel.remove(component);
             }
             jPanel.repaint();
         });
