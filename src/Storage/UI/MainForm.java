@@ -10,6 +10,7 @@ import java.util.ArrayList;
 public class MainForm extends JPanel {
     private StorageManager manager = new StorageManager();
     private ArrayList<JTextField> textBoxes = new ArrayList<JTextField>();
+    private ArrayList<JTextField> orderTextBoxes = new ArrayList<JTextField>();
 
     public void drawItems(Graphics g, int startYPoint) {
         int drawingParam = 80;
@@ -27,9 +28,10 @@ public class MainForm extends JPanel {
             JButton newButton = new JButton();
             newButton.setName(Integer.toString(i));
             newButton.setText("Order!");
-            newButton.setBounds(drawingParam, 600, 100, 30);
+            newButton.setBounds(drawingParam, 700, 100, 30);
             newButton.addActionListener(e -> {
                 String buttonNmae = ((JButton)e.getSource()).getName();
+                Order newOrder = getNewOrder(buttonNmae);
                 //manager.processOrder(getNewOrder(buttonNmae));
                     Animation animation =  new Animation(
                             panel,
@@ -37,14 +39,21 @@ public class MainForm extends JPanel {
                             ((JButton)e.getSource()).getLocation().y,
                             330,
                             270,
-                            textBoxes.get(Integer.valueOf(buttonNmae)).getText()+ "kokc");
+                            newOrder.getProductName() + " " + newOrder.getAmount());
             });
             this.add(newButton);
+
             JTextField newTextBox = new JTextField();
             newTextBox.setName(Integer.toString(i));
-            newTextBox.setBounds(drawingParam, 550, 100,30);
+            newTextBox.setBounds(drawingParam, 590, 100,30);
             textBoxes.add(newTextBox);
             this.add(newTextBox);
+
+            JTextField newOrderTextBox = new JTextField();
+            newOrderTextBox.setName(Integer.toString(i));
+            newOrderTextBox.setBounds(drawingParam, 650, 100,30);
+            orderTextBoxes.add(newOrderTextBox);
+            this.add(newOrderTextBox);
 
             drawingParam += 150;
         }
@@ -57,10 +66,21 @@ public class MainForm extends JPanel {
         g.drawString("Storage",340,280);
     }
 
+    public  void drawLabels(Graphics g) {
+        int drawingParam = 80;
+        g.setColor(Color.BLACK);
+
+        for (int i = 0; i < 4; i++) {
+            g.drawString("Product Name : ",drawingParam,580);
+            g.drawString("Amount : ",drawingParam,640);
+            drawingParam += 150;
+        }
+    }
 
     private Order getNewOrder(String buttonNumber) {
         JTextField textBox = textBoxes.get(Integer.valueOf(buttonNumber));
-        return new Order(textBox.getText(), 5);
+        JTextField orderTextBox = orderTextBoxes.get(Integer.valueOf(buttonNumber));
+        return new Order(textBox.getText(), Integer.valueOf(orderTextBox.getText()));
     }
 
     public MainForm(){
@@ -73,13 +93,14 @@ public class MainForm extends JPanel {
         drawStorage(g);
         drawItems(g, 500);
         drawItems(g, 50);
+        drawLabels(g);
     }
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Oval Sample");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(new MainForm());
-        frame.setSize(700, 700);
+        frame.setSize(700, 800);
         frame.setVisible(true);
     }
 

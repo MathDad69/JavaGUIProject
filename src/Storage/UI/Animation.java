@@ -21,6 +21,7 @@ public class Animation {
     public Animation(JPanel jPanel , int x, int y, int destinationX, int destinationY, String text){
         _timer = new Timer(5, e -> {
             if(!TryMove()) {
+
                 jPanel.remove(component);
             }
             jPanel.repaint();
