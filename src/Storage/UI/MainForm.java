@@ -2,13 +2,12 @@ package Storage.UI;
 
 import Storage.Model.Order;
 import Storage.Model.StorageManager;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class MainForm extends JPanel  {
+public class MainForm extends JPanel {
     private StorageManager manager = new StorageManager();
     private ArrayList<JTextField> textBoxes = new ArrayList<JTextField>();
 
@@ -24,19 +23,23 @@ public class MainForm extends JPanel  {
     public void createCustomersControls() {
         int drawingParam = 80;
         for (int i = 0; i < 4; i++) {
+            JPanel panel= this;
             JButton newButton = new JButton();
             newButton.setName(Integer.toString(i));
             newButton.setText("Order!");
             newButton.setBounds(drawingParam, 600, 100, 30);
-            newButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    String buttonNmae = ((JButton)e.getSource()).getName();
-                    manager.processOrder(getNewOrder(buttonNmae));
-                }
+            newButton.addActionListener(e -> {
+                String buttonNmae = ((JButton)e.getSource()).getName();
+                //manager.processOrder(getNewOrder(buttonNmae));
+                    Animation animation =  new Animation(
+                            panel,
+                            ((JButton)e.getSource()).getLocation().x + ((JButton)e.getSource()).getWidth()/2,
+                            ((JButton)e.getSource()).getLocation().y,
+                            330,
+                            270,
+                            textBoxes.get(Integer.valueOf(buttonNmae)).getText()+ "kokc");
             });
             this.add(newButton);
-
             JTextField newTextBox = new JTextField();
             newTextBox.setName(Integer.toString(i));
             newTextBox.setBounds(drawingParam, 550, 100,30);
@@ -49,10 +52,11 @@ public class MainForm extends JPanel  {
 
     public void drawStorage(Graphics g) {
         g.setColor(Color.RED);
-        g.drawRect(280,230,100,30);
+        g.drawRect(260,250,200,50);
         g.setColor(Color.BLACK);
-        g.drawString("Storage",300,245);
+        g.drawString("Storage",340,280);
     }
+
 
     private Order getNewOrder(String buttonNumber) {
         JTextField textBox = textBoxes.get(Integer.valueOf(buttonNumber));
@@ -78,4 +82,5 @@ public class MainForm extends JPanel  {
         frame.setSize(700, 700);
         frame.setVisible(true);
     }
+
 }
