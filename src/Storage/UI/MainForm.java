@@ -30,14 +30,17 @@ public class MainForm extends JPanel {
             newButton.setBounds(drawingParam, 600, 100, 30);
             newButton.addActionListener(e -> {
                 String buttonNmae = ((JButton)e.getSource()).getName();
-                //manager.processOrder(getNewOrder(buttonNmae));
+                manager.processOrder(getNewOrder(buttonNmae));
                     Animation animation =  new Animation(
                             panel,
                             ((JButton)e.getSource()).getLocation().x + ((JButton)e.getSource()).getWidth()/2,
                             ((JButton)e.getSource()).getLocation().y,
                             330,
                             270,
-                            textBoxes.get(Integer.valueOf(buttonNmae)).getText()+ "kokc");
+                            textBoxes.get(Integer.valueOf(buttonNmae)).getText()+ "kokc",
+                            manager,
+                            true,
+                            getNewOrder(buttonNmae));
             });
             this.add(newButton);
             JTextField newTextBox = new JTextField();

@@ -1,10 +1,12 @@
 package Storage.UI;
 
+import Storage.Model.Order;
+import Storage.Model.StorageManager;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class Animation {
-    Event;
     private Timer _timer;
     private int _movingTime = 150;
     private Component  component;
@@ -13,13 +15,25 @@ public class Animation {
     private int _x,_y;
     private int _destinationX, _destinationY;
 
-    public Animation(JPanel jPanel , int x, int y, int destinationX, int destinationY, String text){
+    public Animation(JPanel jPanel , int x, int y, int destinationX, int destinationY, String text , StorageManager manager, boolean EndAnimationFlag, Order order){
+        InitTimer(jPanel, manager, EndAnimationFlag, order);
+        SetCoordinates(x, y, destinationX, destinationY);
+        AddComponent(jPanel, text);
+        _timer.start();
+    }
+    private  void InitTimer(JPanel jPanel, StorageManager manager, boolean EndAnimationFlag, Order order){
         _timer = new Timer(5, e -> {
             if(!TryMove()) {
+                if(EndAnimationFlag){
+                    manager.processOrder(order);
+                }else{
+                }
                 jPanel.remove(component);
             }
             jPanel.repaint();
         });
+    }
+    private void SetCoordinates(int x, int y, int destinationX, int destinationY){
         this._destinationX = destinationX;
         this._destinationY = destinationY;
         this._x = x;
@@ -27,14 +41,13 @@ public class Animation {
 
         this._velX = (destinationX - x)/_movingTime;
         this._velY = (destinationY - y)/_movingTime;
-
+    }
+    private void AddComponent(JPanel jPanel , String text){
         component = new JLabel();
         component.setBounds(_x, _y, 10, 10);
         ((JLabel) component).setText(text);
         jPanel.add(component);
-        _timer.start();
     }
-
 
     private boolean TryMove(){
         if(_x == _destinationX || _y ==  _destinationY) {
