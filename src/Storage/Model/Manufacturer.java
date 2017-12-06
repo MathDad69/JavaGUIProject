@@ -33,6 +33,5 @@ public class Manufacturer {
 
     public void deliverProduct(String productName, int amount) {
         products.put(productName, products.get(productName) - amount);
-        int test = products.get(productName);
     }
 }

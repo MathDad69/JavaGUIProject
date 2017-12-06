@@ -2,7 +2,6 @@ package Storage.UI;
 
 import Storage.Model.Order;
 import Storage.Model.StorageManager;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -36,7 +35,6 @@ public class MainForm extends JPanel  {
                     manager.processOrder(getNewOrder(buttonNmae));
                 }
             });
-
             this.add(newButton);
 
             JTextField newTextBox = new JTextField();
