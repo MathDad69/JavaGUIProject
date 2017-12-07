@@ -27,16 +27,20 @@ public class Manufacturer {
         this.manufacturerName = manufacturerName;
     }
 
-    public int getProductAmount(String productName) {
-        try {
-            return products.get(productName);
-        }
-        catch (Exception ex) {
-            return 0;
-        }
+    public RequestBody getProductAmount(String productName, StorageManager manager) {
+        RequestBody<Manufacturer, StorageManager> response = new RequestBody<>(
+                this,
+                manager,
+                productName,
+                products.getOrDefault(productName, 0)
+        );
+
+        return response;
     }
 
     public void deliverProduct(String productName, int amount) {
-        products.put(productName, products.get(productName) - amount);
+        if (products.containsKey(productName)) {
+            products.put(productName, products.get(productName) - amount);
+        }
     }
 }

@@ -11,27 +11,37 @@ public class StorageManager {
         return manager;
     }
 
-    public void Run() {
-        Order newOrder = new Order("Koks1", 5);
-
-        for (int i = 0; i < manufacturers.size(); i++) {
-           int value = manufacturers.get(i).getProductAmount(newOrder.getProductName());
-        }
-    }
-
     public void processOrder(Order newOrder) {
         synchronized(this){
-            int total = 0;
-            for (int i = 0; i < manufacturers.size(); i++) {
-                total += manufacturers.get(i).getProductAmount(newOrder.getProductName());
-            }
+            ArrayList availabilityResponses = getResponsesForAvailability(newOrder.getProductName());
 
-            if (newOrder.getAmount() <= total) {
+            if (canProceed(availabilityResponses, newOrder.getAmount())) {
                 new Thread(() -> {
                     deliverItemsFromManufacturers(newOrder);
                 }).start();
             }
         }
+    }
+
+    private ArrayList<RequestBody<Manufacturer, StorageManager>> getResponsesForAvailability(String productName) {
+        ArrayList<RequestBody<Manufacturer, StorageManager>> result = new ArrayList<>();
+
+        for (int i = 0; i < manufacturers.size(); i++) {
+            RequestBody response = manufacturers.get(i).getProductAmount(productName, this);
+            result.add(response);
+        }
+
+        return result;
+    }
+
+    private boolean canProceed(ArrayList<RequestBody> responses, int requestedAmount) {
+        int availableAmount = 0;
+
+        for (int i = 0; i < responses.size(); i++) {
+            availableAmount += responses.get(i).getAmount();
+        }
+
+        return availableAmount >= requestedAmount;
     }
 
     private void deliverItemsFromManufacturers(Order newOrder) {
