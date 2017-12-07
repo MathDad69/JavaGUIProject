@@ -54,12 +54,7 @@ public class MainForm extends JPanel {
             newTextArea.setName(Integer.toString(i));
             newTextArea.setEditable(false);
             newTextArea.setBounds(drawingParam, 20, 100,50);
-
-            String result = "";
-            for ( Map.Entry<String, Integer> entry : StorageManager.getManager().getManufacturers().get(i).getProducts().entrySet() ) {
-                result = result + entry.getKey() + " : " + entry.getValue() + "\n";
-            }
-            newTextArea.setText(result);
+            newTextArea.setText(getManufacturersValue(i));
 
             productsTextBoxes.add(newTextArea);
             this.add(newTextArea);
@@ -119,8 +114,12 @@ public class MainForm extends JPanel {
         }
     }
 
-    public void drawManufacturerProducts() {
-
+    public String getManufacturersValue(int id) {
+        String result = "";
+        for ( Map.Entry<String, Integer> entry : StorageManager.getManager().getManufacturers().get(id).getProducts().entrySet() ) {
+            result = result + entry.getKey() + " : " + entry.getValue() + "\n";
+        }
+        return result;
     }
 
     private Order getNewOrder(String buttonNumber) {
