@@ -1,10 +1,9 @@
 package Storage.UI;
 
 import Storage.Data.MockData;
-import Storage.Events.StorageReceivedProductsEventListener;
 import Storage.Model.Manufacturer;
 import Storage.Model.Message;
-import Storage.Model.Order;
+import Storage.Model.OrderDetails;
 import Storage.Model.StorageManager;
 
 import javax.swing.*;
@@ -12,8 +11,10 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Map;
 
+import static java.awt.Color.*;
 
-public class MainForm extends JPanel implements StorageReceivedProductsEventListener {
+
+public class MainForm extends JPanel {
     private ArrayList<JTextField> textBoxes = new ArrayList<JTextField>();
     private ArrayList<JTextField> orderTextBoxes = new ArrayList<JTextField>();
     private ArrayList<JTextArea> productsTextBoxes = new ArrayList<JTextArea>();
@@ -21,8 +22,8 @@ public class MainForm extends JPanel implements StorageReceivedProductsEventList
     public MainForm(){
         setBackground(Constants.BACKGROUND_Color);
         StorageManager.getManager().setManufacturers(MockData.getManufacturers());
+        StorageManager.getManager().setMainForm(this);
         this.setLayout(null);
-        StorageManager.getManager().addListener(this);
         createCustomersControls();
         drawManufacturersValuesTextAreas();
     }
@@ -65,30 +66,32 @@ public class MainForm extends JPanel implements StorageReceivedProductsEventList
         frame.setVisible(true);
     }
 
-    private Order getNewOrder(String buttonNumber) {
+    private OrderDetails getNewOrder(String buttonNumber) {
         JTextField textBox = textBoxes.get(Integer.valueOf(buttonNumber));
         JTextField orderTextBox = orderTextBoxes.get(Integer.valueOf(buttonNumber));
-        return new Order(textBox.getText(), Integer.valueOf(orderTextBox.getText()));
+        return new OrderDetails(textBox.getText(), Integer.valueOf(orderTextBox.getText()));
     }
 
     private JButton createNewButton(JPanel panel, int drawingParam, int elementIndex) {
         JButton newButton = new JButton();
         newButton.setName(Integer.toString(elementIndex));
-        newButton.setText("Order!");
+        newButton.setText("OrderDetails!");
         newButton.setBounds(drawingParam, Constants.BUTTON_Y, Constants.BUTTON_WIDTH, Constants.BUTTON_HEIGHT);
         newButton.addActionListener(e -> {
             String buttonName = ((JButton)e.getSource()).getName();
-            Order newOrder = getNewOrder(buttonName);
+            OrderDetails newOrder = getNewOrder(buttonName);
             Animation animation =  new Animation(
-                    panel,
-                    ((JButton)e.getSource()).getLocation().x + ((JButton)e.getSource()).getWidth()/2,
-                    Constants.RECTANGLE_CUSTOMERS_Y  +  Constants.RECTANGLE_HEIGHT/2,
-                    Constants.STORAGE_X + Constants.STORAGE_WIDTH/2,
-                    Constants.STORAGE_Y + Constants.STORAGE_HEIGHT/2,
-                    newOrder.getProductName() + " : "  + newOrder.getAmount(),
-                    StorageManager.getManager(),
-                    true,
-                    getNewOrder(buttonName));
+                panel,
+                ((JButton)e.getSource()).getLocation().x + ((JButton)e.getSource()).getWidth()/2,
+                Constants.RECTANGLE_CUSTOMERS_Y  +  Constants.RECTANGLE_HEIGHT/2,
+                Constants.STORAGE_X + Constants.STORAGE_WIDTH/2,
+                Constants.STORAGE_Y + Constants.STORAGE_HEIGHT/2,
+                newOrder.getProductName() + " : "  + newOrder.getAmount(),
+                StorageManager.getManager(),
+                true,
+                getNewOrder(buttonName),
+                BLACK
+            );
         });
 
         return newButton;
@@ -117,7 +120,7 @@ public class MainForm extends JPanel implements StorageReceivedProductsEventList
         return newOrderTextBox;
     }
 
-    private void drawManufacturersValuesTextAreas() {
+    public void drawManufacturersValuesTextAreas() {
         int drawingParam = Constants.ITEM_DRAWING_PARAM;
 
        for (int i = 0; i < productsTextBoxes.size(); i++) {
@@ -125,7 +128,7 @@ public class MainForm extends JPanel implements StorageReceivedProductsEventList
         }
         productsTextBoxes.clear();
 
-       for (int i = 0; i < Constants.ITEMS_COUNT; i++) {
+       for (int i = 0; i < StorageManager.getManager().getManufacturers().size(); i++) {
             JTextArea newTextArea = new JTextArea();
             newTextArea.setName(StorageManager.getManager().getManufacturers().get(i).getManufacturerName());
             newTextArea.setEditable(false);
@@ -144,21 +147,23 @@ public class MainForm extends JPanel implements StorageReceivedProductsEventList
         this.repaint();
     }
 
-    @Override
-    public void actionDone(Message<Manufacturer, StorageManager> data) {
+    public void handleDeliveringDoneOnUI(Message<Manufacturer, StorageManager> data) {
         drawManufacturersValuesTextAreas();
         JTextArea textArea = findTextArea(data.getSender().getManufacturerName());
-        Animation animation =  new Animation(
-                this,
-                textArea.getLocation().x + textArea.getWidth()/2,
-                Constants.RECTANGLE_MANUFACTURERS_Y + Constants.RECTANGLE_HEIGHT/2,
-                Constants.STORAGE_X + Constants.STORAGE_WIDTH/2,
-                Constants.STORAGE_Y + Constants.STORAGE_HEIGHT/2,
-                data.getProductName() + " : "  + data.getAmount(),
-                StorageManager.getManager(),
-                false,
-                null);
+        Animation animation = new Animation(
+            this,
+            textArea.getLocation().x + textArea.getWidth()/2,
+            Constants.RECTANGLE_MANUFACTURERS_Y + Constants.RECTANGLE_HEIGHT/2,
+            Constants.STORAGE_X + Constants.STORAGE_WIDTH/2,
+            Constants.STORAGE_Y + Constants.STORAGE_HEIGHT/2,
+            "[DELIVER] " + data.getOrder().getProductName() + " : "  + data.getOrder().getAmount(),
+            StorageManager.getManager(),
+            false,
+            null,
+            BLUE
+        );
     }
+
     public JTextArea findTextArea(String name) {
         for(JTextArea textArea : productsTextBoxes) {
             if(textArea.getName().equals(name)) {
@@ -166,5 +171,55 @@ public class MainForm extends JPanel implements StorageReceivedProductsEventList
             }
         }
         return null;
+    }
+
+    public void handleSendRequest(String manufacturerName, String productName) {
+        JTextArea textArea = findTextArea(manufacturerName);
+        Animation animation =  new Animation(
+            this,
+            Constants.STORAGE_X + Constants.STORAGE_WIDTH/2,
+            Constants.STORAGE_Y + Constants.STORAGE_HEIGHT/2,
+            textArea.getLocation().x + textArea.getWidth()/2,
+            Constants.RECTANGLE_MANUFACTURERS_Y + Constants.RECTANGLE_HEIGHT/2,
+            "[REQUEST] - " + productName,
+            StorageManager.getManager(),
+            false,
+            null,
+            MAGENTA
+        );
+    }
+
+    public void handleAvailabilityResponseUI(Message<Manufacturer, StorageManager> response) {
+        JTextArea textArea = findTextArea(response.getSender().getManufacturerName());
+
+        Animation animation =  new Animation(
+            this,
+            textArea.getLocation().x + textArea.getWidth()/2,
+            Constants.RECTANGLE_MANUFACTURERS_Y + Constants.RECTANGLE_HEIGHT/2,
+            Constants.STORAGE_X + Constants.STORAGE_WIDTH/2,
+            Constants.STORAGE_Y + Constants.STORAGE_HEIGHT/2,
+            "[RESPONSE] - " + response.getOrder().getProductName() + " {" + response.getOrder().getAmount() + "} ",
+            StorageManager.getManager(),
+            false,
+            null,
+            response.getOrder().getAmount() == 0 ? RED : GREEN
+        );
+    }
+
+    public void handleGiveMeProductUI(String manufacturerName, String product, int amount) {
+        JTextArea textArea = findTextArea(manufacturerName);
+
+        Animation animation =  new Animation(
+            this,
+            Constants.STORAGE_X + Constants.STORAGE_WIDTH/2,
+            Constants.STORAGE_Y + Constants.STORAGE_HEIGHT/2,
+            textArea.getLocation().x + textArea.getWidth()/2,
+            Constants.RECTANGLE_MANUFACTURERS_Y + Constants.RECTANGLE_HEIGHT/2,
+            "[GIVE ME] - " + product + " {" + amount + "} ",
+            StorageManager.getManager(),
+            false,
+            null,
+            ORANGE
+        );
     }
 }

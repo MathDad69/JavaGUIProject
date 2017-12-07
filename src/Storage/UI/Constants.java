@@ -7,9 +7,9 @@ public final class Constants {
     public static int FORM_WIDTH = 700;
     public static int FROM_HEIGHT = 700;
 
-    public static int ITEMS_COUNT = 4;
+    public static int ITEMS_COUNT = 3;
     public static int ITEM_DRAWING_PARAM = 80;
-    public static int DRAWING_PARAM_BUFFER = 150;
+    public static int DRAWING_PARAM_BUFFER = 250;
     public static int RECTANGLE_WIDTH = 100;
     public static int RECTANGLE_HEIGHT = 30;
 
