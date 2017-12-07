@@ -22,4 +22,9 @@ public final class Constants {
     public static int CUSTOME_NAMES_Y = 520;
     public static int RECTANGLE_CUSTOMERS_STARTING_Y = 500;
     public static int RECTANGLE_MANUFERTURERS_STARTING_Y = 100;
+    public static int FORM_WIDTH = 700;
+    public static int FROM_HEIGTH = 800;
+    public static int TEXT_FIELD_Y = 590;
+    public static int TEXT_FIELD_WIDTH = 100;
+    public static int TEXT_FIELD_HEIGHT = 30;
 }

@@ -1,33 +1,34 @@
 package Storage.UI;
 
 import Storage.Data.MockData;
-import Storage.Model.Manufacturer;
 import Storage.Model.Order;
 import Storage.Model.StorageManager;
+import Storage.Events.StorageReceivedProductsEventListener;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class MainForm extends JPanel {
+
+public class MainForm extends JPanel implements StorageReceivedProductsEventListener {
     private ArrayList<JTextField> textBoxes = new ArrayList<JTextField>();
     private ArrayList<JTextField> orderTextBoxes = new ArrayList<JTextField>();
     private ArrayList<JTextArea> productsTextBoxes = new ArrayList<JTextArea>();
-    private String newline = System.getProperty("line.separator");
 
     public MainForm(){
         StorageManager.getManager().setManufacturers(MockData.getManufacturers());
         this.setLayout(null);
+        StorageManager.getManager().addListener(this);
         createCustomersControls();
+        drawManufacturersValuesTextAreas();
     }
 
     public void createCustomersControls() {
         int drawingParam = Constants.CUSTOMERS_CONTROLS_DRAWING_PARAM;
         for (int i = 0; i < Constants.ITEMS_COUNT; i++) {
             this.add(createNewButton(this, drawingParam, i));
-            this.add(createNewTextArea(drawingParam, i));
-            this.add(createNewTextArea(drawingParam, i));
+            this.add(createNewTextField(drawingParam, i));
             this.add(creatNewOrderField(drawingParam, i));
 
             drawingParam += Constants.DRAWING_PARAM_BUFFER;
@@ -56,7 +57,7 @@ public class MainForm extends JPanel {
         JFrame frame = new JFrame("Oval Sample");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(new MainForm());
-        frame.setSize(700, 800);
+        frame.setSize(Constants.FORM_WIDTH, Constants.FROM_HEIGTH);
         frame.setVisible(true);
     }
 
@@ -89,21 +90,10 @@ public class MainForm extends JPanel {
         return newButton;
     }
 
-    private JTextArea createNewTextArea(int drawingParam, int elementIndex) {
-        JTextArea newTextArea = new JTextArea();
-        newTextArea.setName(Integer.toString(elementIndex));
-        newTextArea.setEditable(false);
-        newTextArea.setBounds(drawingParam, 20, 100,50);
-        newTextArea.setText(getManufacturersValue(elementIndex));
-        productsTextBoxes.add(newTextArea);
-
-        return newTextArea;
-    }
-
     private JTextField createNewTextField(int drawingParam, int elementIndex) {
         JTextField newTextBox = new JTextField();
         newTextBox.setName(Integer.toString(elementIndex));
-        newTextBox.setBounds(drawingParam, 590, 100,30);
+        newTextBox.setBounds(drawingParam, Constants.TEXT_FIELD_Y, Constants.TEXT_FIELD_WIDTH, Constants.TEXT_FIELD_HEIGHT);
         textBoxes.add(newTextBox);
 
         return newTextBox;
@@ -116,5 +106,31 @@ public class MainForm extends JPanel {
         orderTextBoxes.add(newOrderTextBox);
 
         return newOrderTextBox;
+    }
+
+    private void drawManufacturersValuesTextAreas() {
+        int drawingParam = Constants.CUSTOMERS_CONTROLS_DRAWING_PARAM;
+
+       for (int i = 0; i < productsTextBoxes.size(); i++) {
+            this.remove(productsTextBoxes.get(i));
+        }
+        productsTextBoxes.clear();
+
+       for (int i = 0; i < Constants.ITEMS_COUNT; i++) {
+            JTextArea newTextArea = new JTextArea();
+            newTextArea.setName(Integer.toString(i));
+            newTextArea.setEditable(false);
+            newTextArea.setBounds(drawingParam, 20, 100,50);
+            newTextArea.setText(getManufacturersValue(i));
+            productsTextBoxes.add(newTextArea);
+            this.add(newTextArea);
+
+            drawingParam += Constants.DRAWING_PARAM_BUFFER;
+        }
+    }
+
+    @Override
+    public void actionDone() {
+        drawManufacturersValuesTextAreas();
     }
 }
