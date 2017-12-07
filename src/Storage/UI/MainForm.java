@@ -35,8 +35,8 @@ public class MainForm extends JPanel {
             newButton.setText("Order!");
             newButton.setBounds(drawingParam, 700, 100, 30);
             newButton.addActionListener(e -> {
-                String buttonNmae = ((JButton)e.getSource()).getName();
-                Order newOrder = getNewOrder(buttonNmae);
+                String buttonName = ((JButton)e.getSource()).getName();
+                Order newOrder = getNewOrder(buttonName);
                 Animation animation =  new Animation(
                         panel,
                         ((JButton)e.getSource()).getLocation().x + ((JButton)e.getSource()).getWidth()/2,
@@ -46,7 +46,7 @@ public class MainForm extends JPanel {
                         newOrder.getProductName() + " : "  + newOrder.getAmount(),
                         StorageManager.getManager(),
                         true,
-                        getNewOrder(buttonNmae));
+                        getNewOrder(buttonName));
             });
             this.add(newButton);
 

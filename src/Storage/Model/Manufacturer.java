@@ -27,16 +27,30 @@ public class Manufacturer {
         this.manufacturerName = manufacturerName;
     }
 
-    public int getProductAmount(String productName) {
-        try {
-            return products.get(productName);
-        }
-        catch (Exception ex) {
-            return 0;
-        }
+    public Message getProductAmount(String productName, StorageManager manager) {
+        Message<Manufacturer, StorageManager> response = new Message<>(
+                this,
+                manager,
+                productName,
+                products.getOrDefault(productName, 0)
+        );
+
+        return response;
     }
 
-    public void deliverProduct(String productName, int amount) {
+    public void deliverProduct(String productName, int amount, StorageManager storage) {
         products.put(productName, products.get(productName) - amount);
+        sendDeliveringResponse(productName, amount, storage);
+    }
+
+    public void sendDeliveringResponse(String productName, int amount, StorageManager storage) {
+        Message<Manufacturer, StorageManager> response = new Message<>(
+        this,
+            storage,
+            productName,
+            amount
+        );
+
+        storage.receiveDeliveringResponse(response);
     }
 }
