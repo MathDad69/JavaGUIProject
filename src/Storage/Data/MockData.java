@@ -1,12 +1,25 @@
 package Storage.Data;
 
 import Storage.Model.Manufacturer;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 
 public final class MockData {
-    public static ArrayList<Manufacturer> getManufacturers() {
+    public static ArrayList<Manufacturer> getManufacturers(){
+
+        Gson gson = new Gson();
         ArrayList<Manufacturer> manufacturers = new ArrayList<Manufacturer>();
+        try {
+            manufacturers = gson.fromJson(new FileReader("C:\\Users\\orest\\Desktop\\Project\\JavaGUIProject\\src\\Storage\\Data\\Orders.json"), new TypeToken<ArrayList<Manufacturer>>(){}.getType());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        /*ArrayList<Manufacturer> manufacturers = new ArrayList<Manufacturer>();
 
         manufacturers.add(new Manufacturer("Orest"));
         manufacturers.add(new Manufacturer("Vasyl"));
@@ -23,7 +36,7 @@ public final class MockData {
 
         manufacturers.get(3).getProducts().put("Koks3", 42);
         manufacturers.get(3).getProducts().put("Koks2", 22);
-        manufacturers.get(3).getProducts().put("Koks4", 12);
+        manufacturers.get(3).getProducts().put("Koks4", 12); */
 
         return manufacturers;
     }
