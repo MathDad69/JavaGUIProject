@@ -7,13 +7,14 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Animation {
-    private Timer _timer;
-    private int _movingTime = 150;
-    private Component  component;
+    private int _movingTime = 100;
 
-    private double _velX, _velY;
+    private Component  component;
+    private Timer _timer;
+
     private int _x,_y;
     private int _destinationX, _destinationY;
+    private double _velX, _velY;
 
     public Animation(JPanel jPanel , int x, int y, int destinationX, int destinationY, String text , StorageManager manager, boolean EndAnimationFlag, Order order){
         InitTimer(jPanel, manager, EndAnimationFlag, order);

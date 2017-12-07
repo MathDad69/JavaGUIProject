@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public final class DrawingHelper {
     public static void drawItems(Graphics g, int startYPoint) {
-        int drawingParam = Constants.CUSTOMERS_CONTROLS_DRAWING_PARAM;
+        int drawingParam = Constants.ITEM_DRAWING_PARAM;
         g.setColor(Color.RED);
 
         for (int i = 0; i < Constants.ITEMS_COUNT; i++) {
@@ -26,7 +26,7 @@ public final class DrawingHelper {
     }
 
     public static void drawLabels(Graphics g) {
-        int drawingParam = Constants.CUSTOMERS_CONTROLS_DRAWING_PARAM;
+        int drawingParam = Constants.ITEM_DRAWING_PARAM;
         g.setColor(Color.BLACK);
 
         for (int i = 0; i < Constants.ITEMS_COUNT; i++) {
@@ -52,7 +52,7 @@ public final class DrawingHelper {
         g.setColor(Color.BLACK);
 
         for (String entry : customers) {
-            g.drawString(entry, drawingParam, Constants.CUSTOME_NAMES_Y);
+            g.drawString(entry, drawingParam, Constants.CUSTOMER_NAMES_Y);
             drawingParam += Constants.DRAWING_PARAM_BUFFER;
         }
     }
