@@ -1,6 +1,8 @@
 package Storage.UI;
 
 import Storage.Data.MockData;
+import Storage.Events.ProjectEventListener;
+import Storage.Events.StorageReceivedProductsEventListener;
 import Storage.Model.Manufacturer;
 import Storage.Model.Order;
 import Storage.Model.StorageManager;
@@ -10,7 +12,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class MainForm extends JPanel {
+public class MainForm extends JPanel implements StorageReceivedProductsEventListener {
     private ArrayList<JTextField> textBoxes = new ArrayList<JTextField>();
     private ArrayList<JTextField> orderTextBoxes = new ArrayList<JTextField>();
     private ArrayList<JTextArea> productsTextBoxes = new ArrayList<JTextArea>();
@@ -50,15 +52,6 @@ public class MainForm extends JPanel {
             });
             this.add(newButton);
 
-            JTextArea newTextArea = new JTextArea();
-            newTextArea.setName(Integer.toString(i));
-            newTextArea.setEditable(false);
-            newTextArea.setBounds(drawingParam, 20, 100,50);
-            newTextArea.setText(getManufacturersValue(i));
-
-            productsTextBoxes.add(newTextArea);
-            this.add(newTextArea);
-
             JTextField newTextBox = new JTextField();
             newTextBox.setName(Integer.toString(i));
             newTextBox.setBounds(drawingParam, 590, 100,30);
@@ -70,6 +63,28 @@ public class MainForm extends JPanel {
             newOrderTextBox.setBounds(drawingParam, 650, 100,30);
             orderTextBoxes.add(newOrderTextBox);
             this.add(newOrderTextBox);
+
+            drawingParam += 150;
+        }
+    }
+
+    public void drawManufacturersValuesTextAreas() {
+        int drawingParam = 80;
+
+        for (int i = 0; i < productsTextBoxes.size(); i++) {
+            this.remove(productsTextBoxes.get(i));
+        }
+        productsTextBoxes.clear();
+
+        for (int i = 0; i < 4; i++) {
+            JTextArea newTextArea = new JTextArea();
+            newTextArea.setName(Integer.toString(i));
+            newTextArea.setEditable(false);
+            newTextArea.setBounds(drawingParam, 20, 100,50);
+            newTextArea.setText(getManufacturersValue(i));
+
+            productsTextBoxes.add(newTextArea);
+            this.add(newTextArea);
 
             drawingParam += 150;
         }
@@ -130,8 +145,10 @@ public class MainForm extends JPanel {
 
     public MainForm(){
         StorageManager.getManager().setManufacturers(MockData.getManufacturers());
+        StorageManager.getManager().addListener(this);
         this.setLayout(null);
         createCustomersControls();
+        drawManufacturersValuesTextAreas();
     }
 
     public void paintComponent(Graphics g) {
@@ -150,5 +167,10 @@ public class MainForm extends JPanel {
         frame.add(new MainForm());
         frame.setSize(700, 800);
         frame.setVisible(true);
+    }
+
+    @Override
+    public void actionDone() {
+        drawManufacturersValuesTextAreas();
     }
 }
