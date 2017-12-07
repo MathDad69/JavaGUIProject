@@ -127,6 +127,9 @@ public class MainForm extends JPanel implements StorageReceivedProductsEventList
 
             drawingParam += Constants.DRAWING_PARAM_BUFFER;
         }
+
+        this.revalidate();
+        this.repaint();
     }
 
     @Override
