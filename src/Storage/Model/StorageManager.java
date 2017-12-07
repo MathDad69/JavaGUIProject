@@ -1,8 +1,10 @@
 package Storage.Model;
 
+import Storage.Events.Initiater;
+
 import java.util.ArrayList;
 
-public class StorageManager {
+public class StorageManager extends Initiater {
     private ArrayList<Manufacturer> manufacturers;
 
     private static StorageManager manager = new StorageManager();
@@ -70,27 +72,19 @@ public class StorageManager {
         int satisfiedAmount = 0;
 
         for (int i = 0; i < availabilityResponses.size() && satisfiedAmount < requestedAmount; i++) {
-            int canSatisfy = availabilityResponses.get(i).getAmount();
+            int amountToRequest = Math.min(requestedAmount - satisfiedAmount, availabilityResponses.get(i).getAmount());
+            if (amountToRequest == 0) continue;
 
-            if (canSatisfy == 0) {
-               continue;
-            }
+            requests.add(
+                new Message<StorageManager, Manufacturer>(
+                    this,
+                    availabilityResponses.get(i).getSender(),
+                    availabilityResponses.get(i).getProductName(),
+                    amountToRequest
+                )
+            );
 
-            Message<StorageManager, Manufacturer> request =
-                    new Message<StorageManager, Manufacturer>(
-                            this,
-                            availabilityResponses.get(i).getSender(),
-                            availabilityResponses.get(i).getProductName(),
-                            0);
-
-            if (satisfiedAmount + canSatisfy <= requestedAmount) {
-                request.setAmount(canSatisfy);
-            } else {
-                request.setAmount(requestedAmount - satisfiedAmount);
-            }
-
-            requests.add(request);
-            satisfiedAmount += request.getAmount();
+            satisfiedAmount += amountToRequest;
         }
 
 
@@ -98,7 +92,7 @@ public class StorageManager {
     }
 
     public void receiveDeliveringResponse(Message<Manufacturer, StorageManager> response) {
-        // here goes a UI part
+        doSomething();
     }
 
     public void setManufacturers(ArrayList<Manufacturer> manufacturers) {
