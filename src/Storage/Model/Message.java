@@ -1,12 +1,12 @@
 package Storage.Model;
 
-public class RequestBody<SenderType, ReceiverType> {
+public class Message<SenderType, ReceiverType> {
     private SenderType sender;
     private ReceiverType receiver;
     private String productName;
     private int amount;
 
-    public RequestBody(SenderType sender, ReceiverType receiver, String productName, int amount) {
+    public Message(SenderType sender, ReceiverType receiver, String productName, int amount) {
         this.sender = sender;
         this.receiver = receiver;
         this.productName = productName;

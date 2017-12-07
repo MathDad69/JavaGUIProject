@@ -27,8 +27,8 @@ public class Manufacturer {
         this.manufacturerName = manufacturerName;
     }
 
-    public RequestBody getProductAmount(String productName, StorageManager manager) {
-        RequestBody<Manufacturer, StorageManager> response = new RequestBody<>(
+    public Message getProductAmount(String productName, StorageManager manager) {
+        Message<Manufacturer, StorageManager> response = new Message<>(
                 this,
                 manager,
                 productName,
@@ -38,9 +38,19 @@ public class Manufacturer {
         return response;
     }
 
-    public void deliverProduct(String productName, int amount) {
-        if (products.containsKey(productName)) {
-            products.put(productName, products.get(productName) - amount);
-        }
+    public void deliverProduct(String productName, int amount, StorageManager storage) {
+        products.put(productName, products.get(productName) - amount);
+        sendDeliveringResponse(productName, amount, storage);
+    }
+
+    public void sendDeliveringResponse(String productName, int amount, StorageManager storage) {
+        Message<Manufacturer, StorageManager> response = new Message<>(
+        this,
+            storage,
+            productName,
+            amount
+        );
+
+        storage.receiveDeliveringResponse(response);
     }
 }
