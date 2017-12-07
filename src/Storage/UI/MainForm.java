@@ -1,6 +1,8 @@
 package Storage.UI;
 
 import Storage.Data.MockData;
+import Storage.Model.Manufacturer;
+import Storage.Model.Message;
 import Storage.Model.Order;
 import Storage.Model.StorageManager;
 import Storage.Events.StorageReceivedProductsEventListener;
@@ -118,7 +120,7 @@ public class MainForm extends JPanel implements StorageReceivedProductsEventList
 
        for (int i = 0; i < Constants.ITEMS_COUNT; i++) {
             JTextArea newTextArea = new JTextArea();
-            newTextArea.setName(Integer.toString(i));
+            newTextArea.setName(StorageManager.getManager().getManufacturers().get(i).getManufacturerName());
             newTextArea.setEditable(false);
             newTextArea.setBounds(drawingParam, 20, 100,50);
             newTextArea.setText(getManufacturersValue(i));
@@ -133,7 +135,27 @@ public class MainForm extends JPanel implements StorageReceivedProductsEventList
     }
 
     @Override
-    public void actionDone() {
+    public void actionDone(Message<Manufacturer, StorageManager> data) {
         drawManufacturersValuesTextAreas();
+        JTextArea textArea = findTextArea(data.getSender().getManufacturerName());
+        Animation animation =  new Animation(
+                this,
+                textArea.getLocation().x + textArea.getWidth()/2,
+                textArea.getLocation().y,
+                330,
+                270,
+                data.getProductName() + " : "  + data.getAmount(),
+                StorageManager.getManager(),
+                false,
+                null);
+    }
+
+    public JTextArea findTextArea(String name) {
+        for(JTextArea textArea : productsTextBoxes) {
+            if(textArea.getName().equals(name)) {
+                return textArea;
+            }
+        }
+        return null;
     }
 }

@@ -2,6 +2,8 @@ package Storage.Model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Manufacturer {
     private String manufacturerName;
@@ -38,8 +40,12 @@ public class Manufacturer {
         return response;
     }
 
-    public void deliverProduct(String productName, int amount, StorageManager storage) {
+    public void deliverProduct(String productName, int amount, StorageManager storage) throws InterruptedException {
         products.put(productName, products.get(productName) - amount);
+
+        // mock some delivering delay
+        Thread.sleep(1000 * ThreadLocalRandom.current().nextInt(0, 5));
+
         sendDeliveringResponse(productName, amount, storage);
     }
 

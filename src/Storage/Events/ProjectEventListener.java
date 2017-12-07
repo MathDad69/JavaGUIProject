@@ -1,5 +1,5 @@
 package Storage.Events;
 
-public interface ProjectEventListener {
-    void actionDone();
+public interface ProjectEventListener<T1> {
+    void actionDone(T1 object);
 }

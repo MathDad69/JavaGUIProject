@@ -4,7 +4,7 @@ import Storage.Events.Initiater;
 
 import java.util.ArrayList;
 
-public class StorageManager extends Initiater {
+public class StorageManager extends Initiater<Message> {
     private ArrayList<Manufacturer> manufacturers;
 
     private static StorageManager manager = new StorageManager();
@@ -54,13 +54,17 @@ public class StorageManager extends Initiater {
             final int requestIndex = i;
 
             new Thread(() -> {
-                requests.get(requestIndex)
-                    .getReceiver()
-                    .deliverProduct(
-                        requests.get(requestIndex).getProductName(),
-                        requests.get(requestIndex).getAmount(),
-                        this
-                    );
+                try {
+                    requests.get(requestIndex)
+                        .getReceiver()
+                        .deliverProduct(
+                            requests.get(requestIndex).getProductName(),
+                            requests.get(requestIndex).getAmount(),
+                            this
+                        );
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }).start();
         }
     }
@@ -92,7 +96,7 @@ public class StorageManager extends Initiater {
     }
 
     public void receiveDeliveringResponse(Message<Manufacturer, StorageManager> response) {
-        doSomething();
+        doSomething(response);
     }
 
     public void setManufacturers(ArrayList<Manufacturer> manufacturers) {
