@@ -43,27 +43,24 @@ public class Manufacturer {
             int amount = storage.getNotificationAboutAvailability(response, orderGUID);
 
             if (amount > 0) {
-                deliverProduct(productName, amount, storage);
+                deliverProduct(productName, amount, storage, orderGUID);
             }
         }
     }
 
-    public void deliverProduct(String productName, int amount, StorageManager storage) throws InterruptedException {
+    public void deliverProduct(String productName, int amount, StorageManager storage, String guid) throws InterruptedException {
         products.put(productName, products.get(productName) - amount);
 
-        // mock some delivering delay
-        Thread.sleep(1000 * ThreadLocalRandom.current().nextInt(2, 10));
+//        // mock some delivering delay
+//        Thread.sleep(1000 * ThreadLocalRandom.current().nextInt(2, 10));
 
-        sendDeliveringResponse(productName, amount, storage);
-    }
-
-    public void sendDeliveringResponse(String productName, int amount, StorageManager storage) {
+        // send response
         Message<Manufacturer, StorageManager> response = new Message<Manufacturer, StorageManager>(
-        this,
-            storage,
-            new OrderDetails(productName, amount)
+                this,
+                storage,
+                new OrderDetails(productName, amount)
         );
 
-        storage.receiveDeliveringResponse(response);
+        storage.receiveDeliveringResponse(response, guid);
     }
 }

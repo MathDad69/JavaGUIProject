@@ -4,6 +4,7 @@ import Storage.Data.MockData;
 import Storage.Model.Manufacturer;
 import Storage.Model.StorageManager;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
