@@ -1,4 +1,4 @@
 package Storage.UI;
 
-public class Constants {
+public final class Constants {
 }
