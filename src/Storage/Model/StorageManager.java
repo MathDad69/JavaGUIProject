@@ -1,11 +1,16 @@
 package Storage.Model;
 
-import Storage.Events.Initiater;
+import Storage.UI.MainForm;
 
+import javax.swing.*;
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
-public class StorageManager extends Initiater<Message> {
+public class StorageManager {
     private ArrayList<Manufacturer> manufacturers;
+    private ArrayList<ProceededOrder> orders = new ArrayList<>();
+    private MainForm mainForm;
 
     private static StorageManager manager = new StorageManager();
 
@@ -13,40 +18,24 @@ public class StorageManager extends Initiater<Message> {
         return manager;
     }
 
-    public void processOrder(Order newOrder) {
-        synchronized(this){
-            ArrayList availabilityResponses = getResponsesForAvailability(newOrder.getProductName());
-
-            ArrayList<Message<StorageManager, Manufacturer>> requests =
-                    buildRequestsToManufacturers(availabilityResponses, newOrder.getAmount());
-
-            if (requests != null) {
-                deliverItemsFromManufacturers(requests);
-            }
-        }
+    public void processOrder(OrderDetails newOrder) throws InterruptedException {
+        this.orders.add(new ProceededOrder(newOrder));
+        this.getResponsesForAvailability(newOrder.getProductName(), newOrder.getOrderGUID());
     }
 
-    private ArrayList<Message<Manufacturer, StorageManager>>
-        getResponsesForAvailability(String productName) {
-
-        ArrayList<Message<Manufacturer, StorageManager>> result = new ArrayList<>();
-
+    private void getResponsesForAvailability(String productName, String orderGUID) throws InterruptedException {
         for (int i = 0; i < manufacturers.size(); i++) {
-            Message response = manufacturers.get(i).getProductAmount(productName, this);
-            result.add(response);
+            final int requestIndex = i;
+
+            new Thread(() -> {
+                try {
+                    this.mainForm.handleSendRequest(manufacturers.get(requestIndex).getManufacturerName(), productName);
+                    manufacturers.get(requestIndex).proceedOrder(productName, this, orderGUID);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
         }
-
-        return result;
-    }
-
-    private boolean canProceed(ArrayList<Message> responses, int requestedAmount) {
-        int availableAmount = 0;
-
-        for (int i = 0; i < responses.size(); i++) {
-            availableAmount += responses.get(i).getAmount();
-        }
-
-        return availableAmount >= requestedAmount;
     }
 
     private void deliverItemsFromManufacturers(ArrayList<Message<StorageManager, Manufacturer>> requests) {
@@ -58,8 +47,8 @@ public class StorageManager extends Initiater<Message> {
                     requests.get(requestIndex)
                         .getReceiver()
                         .deliverProduct(
-                            requests.get(requestIndex).getProductName(),
-                            requests.get(requestIndex).getAmount(),
+                            requests.get(requestIndex).getOrder().getProductName(),
+                            requests.get(requestIndex).getOrder().getAmount(),
                             this
                         );
                 } catch (InterruptedException e) {
@@ -69,34 +58,8 @@ public class StorageManager extends Initiater<Message> {
         }
     }
 
-    private ArrayList<Message<StorageManager, Manufacturer>>
-        buildRequestsToManufacturers(ArrayList<Message<Manufacturer, StorageManager>> availabilityResponses, int requestedAmount) {
-
-        ArrayList<Message<StorageManager, Manufacturer>> requests = new ArrayList<>();
-        int satisfiedAmount = 0;
-
-        for (int i = 0; i < availabilityResponses.size() && satisfiedAmount < requestedAmount; i++) {
-            int amountToRequest = Math.min(requestedAmount - satisfiedAmount, availabilityResponses.get(i).getAmount());
-            if (amountToRequest == 0) continue;
-
-            requests.add(
-                new Message<StorageManager, Manufacturer>(
-                    this,
-                    availabilityResponses.get(i).getSender(),
-                    availabilityResponses.get(i).getProductName(),
-                    amountToRequest
-                )
-            );
-
-            satisfiedAmount += amountToRequest;
-        }
-
-
-        return satisfiedAmount == requestedAmount ? requests : null;
-    }
-
     public void receiveDeliveringResponse(Message<Manufacturer, StorageManager> response) {
-        doSomething(response);
+        this.mainForm.handleDeliveringDoneOnUI(response);
     }
 
     public void setManufacturers(ArrayList<Manufacturer> manufacturers) {
@@ -105,5 +68,46 @@ public class StorageManager extends Initiater<Message> {
 
     public ArrayList<Manufacturer> getManufacturers() {
         return manufacturers;
+    }
+
+    public ArrayList<ProceededOrder> getOrders() {
+        return orders;
+    }
+
+    public int getNotificationAboutAvailability(Message<Manufacturer, StorageManager> response, String orderGUID) throws InterruptedException {
+        ProceededOrder order = null;
+
+        this.mainForm.handleAvailabilityResponseUI(response);
+
+        for(int i = 0; i < this.orders.size(); i++) {
+            if (Objects.equals(this.orders.get(i).getOrder().getOrderGUID(), orderGUID)) {
+                order = this.orders.get(i);
+                break;
+            }
+        }
+
+        if (order != null) {
+            int amountToRequest = Math.min(order.getOrder().getAmount() - order.getSatisfiedAmount(), response.getOrder().getAmount());
+            order.addToSatisfiedAmount(amountToRequest);
+
+            Thread.sleep(1000);
+            this.mainForm.handleGiveMeProductUI(response.getSender().getManufacturerName(), response.getOrder().getProductName(), amountToRequest);
+
+            return amountToRequest;
+        }
+
+        // mock some delivering delay
+        Thread.sleep(1000 * ThreadLocalRandom.current().nextInt(2, 10));
+//        Thread.sleep(1000 * 5);
+
+        return 0;
+    }
+
+    public JPanel getMainForm() {
+        return mainForm;
+    }
+
+    public void setMainForm(MainForm mainForm) {
+        this.mainForm = mainForm;
     }
 }

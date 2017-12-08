@@ -3,14 +3,12 @@ package Storage.Model;
 public class Message<SenderType, ReceiverType> {
     private SenderType sender;
     private ReceiverType receiver;
-    private String productName;
-    private int amount;
+    private OrderDetails order;
 
-    public Message(SenderType sender, ReceiverType receiver, String productName, int amount) {
+    public Message(SenderType sender, ReceiverType receiver, OrderDetails order) {
         this.sender = sender;
         this.receiver = receiver;
-        this.productName = productName;
-        this.amount = amount;
+        this.order = order;
     }
 
     public SenderType getSender() {
@@ -29,19 +27,11 @@ public class Message<SenderType, ReceiverType> {
         this.receiver = receiver;
     }
 
-    public String getProductName() {
-        return productName;
+    public OrderDetails getOrder() {
+        return order;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public int getAmount() {
-        return amount;
-    }
-
-    public void setAmount(int amount) {
-        this.amount = amount;
+    public void setOrder(OrderDetails order) {
+        this.order = order;
     }
 }

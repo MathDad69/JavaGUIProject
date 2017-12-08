@@ -2,7 +2,6 @@ package Storage.Model;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Manufacturer {
@@ -29,32 +28,40 @@ public class Manufacturer {
         this.manufacturerName = manufacturerName;
     }
 
-    public Message getProductAmount(String productName, StorageManager manager) {
-        Message<Manufacturer, StorageManager> response = new Message<>(
-                this,
-                manager,
-                productName,
-                products.getOrDefault(productName, 0)
-        );
+    public void proceedOrder(String productName, StorageManager storage, String orderGUID) throws InterruptedException {
+        synchronized (this) {
+            // mock some delivering delay
+            Thread.sleep(1000 * ThreadLocalRandom.current().nextInt(2, 10));
+//            Thread.sleep(1000 * 5);
 
-        return response;
+            Message<Manufacturer, StorageManager> response = new Message<Manufacturer, StorageManager>(
+                    this,
+                    storage,
+                    new OrderDetails(productName, products.getOrDefault(productName, 0))
+            );
+
+            int amount = storage.getNotificationAboutAvailability(response, orderGUID);
+
+            if (amount > 0) {
+                deliverProduct(productName, amount, storage);
+            }
+        }
     }
 
     public void deliverProduct(String productName, int amount, StorageManager storage) throws InterruptedException {
         products.put(productName, products.get(productName) - amount);
 
         // mock some delivering delay
-        Thread.sleep(1000 * ThreadLocalRandom.current().nextInt(0, 5));
+        Thread.sleep(1000 * ThreadLocalRandom.current().nextInt(2, 10));
 
         sendDeliveringResponse(productName, amount, storage);
     }
 
     public void sendDeliveringResponse(String productName, int amount, StorageManager storage) {
-        Message<Manufacturer, StorageManager> response = new Message<>(
+        Message<Manufacturer, StorageManager> response = new Message<Manufacturer, StorageManager>(
         this,
             storage,
-            productName,
-            amount
+            new OrderDetails(productName, amount)
         );
 
         storage.receiveDeliveringResponse(response);

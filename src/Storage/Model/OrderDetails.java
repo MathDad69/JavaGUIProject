@@ -1,12 +1,14 @@
 package Storage.Model;
 
-public class Order {
+public class OrderDetails {
     private String productName;
     private int amount;
+    private String orderGUID;
 
-    public Order(String productName, int amount) {
+    public OrderDetails(String productName, int amount) {
         this.productName = productName;
         this.amount = amount;
+        this.orderGUID = java.util.UUID.randomUUID().toString();
     }
 
     public String getProductName(){
@@ -23,5 +25,13 @@ public class Order {
 
     public void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    public String getOrderGUID() {
+        return orderGUID;
+    }
+
+    public void setOrderGUID(String orderGUID) {
+        this.orderGUID = orderGUID;
     }
 }
