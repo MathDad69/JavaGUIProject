@@ -56,7 +56,7 @@ public class MainForm extends JPanel {
         String result = "";
         ArrayList<ProceededOrder> orders = StorageManager.getManager().getOrders();
 
-        for(int i = 0; i < orders.size(); i++) {
+        for(int i = orders.size()-1; i >= 0; i--) {
             OrderDetails order = orders.get(i).getOrder();
 
             result += ("[ORDER]     - " + order.getOrderGUID() + "\n");
