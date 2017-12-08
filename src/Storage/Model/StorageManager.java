@@ -79,15 +79,9 @@ public class StorageManager {
         if (order != null) {
             int amountToRequest = Math.min(order.getOrder().getAmount() - order.getSatisfiedAmount(), response.getOrder().getAmount());
             order.addToSatisfiedAmount(amountToRequest);
-
-            Thread.sleep(1000);
             this.mainForm.handleGiveMeProductUI(response.getSender().getManufacturerName(), response.getOrder().getProductName(), amountToRequest);
-
             return amountToRequest;
         }
-
-        // mock some delivering delay
-        Thread.sleep(1000 * ThreadLocalRandom.current().nextInt(2, 10));
 
         return 0;
     }
