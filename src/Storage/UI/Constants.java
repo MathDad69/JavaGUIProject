@@ -14,19 +14,19 @@ public final class Constants {
     public static int RECTANGLE_HEIGHT = 30;
 
 
-    public static int MANUFACTURER_PRODUCT_WIDTH = 100;
-    public static int MANUFACTURER_PRODUCT_HEIGHT = 30;
+    public static int MANUFACTURER_PRODUCT_WIDTH = 140;
+    public static int MANUFACTURER_PRODUCT_HEIGHT = 60;
     public static int MANUFACTURER_PRODUCT_Y = 10;
-    public static int MANUFACTURER_NAMES_Y = 80;
-    public static int RECTANGLE_MANUFACTURERS_Y = 60;
+    public static int MANUFACTURER_NAMES_Y = 110;
+    public static int RECTANGLE_MANUFACTURERS_Y = 90;
 
     public static int STORAGE_X = 260;
-    public static int STORAGE_Y = 250;
+    public static int STORAGE_Y = 350;
     public static int STORAGE_WIDTH = 200;
     public static int STORAGE_HEIGHT = 50;
     public static String STORAGE_NAME = "Storage";
     public static int STORAGE_NAME_X = 340;
-    public static int STORAGE_NAME_Y = 280;
+    public static int STORAGE_NAME_Y = 380;
 
     public static String PRODUCT_LABEL_TEXT = "Product Name : ";
     public static String AMOUNT_LABEL_TEXT = "Amount : ";

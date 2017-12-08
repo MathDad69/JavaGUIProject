@@ -15,23 +15,7 @@ public class Message<SenderType, ReceiverType> {
         return sender;
     }
 
-    public void setSender(SenderType sender) {
-        this.sender = sender;
-    }
-
-    public ReceiverType getReceiver() {
-        return receiver;
-    }
-
-    public void setReceiver(ReceiverType receiver) {
-        this.receiver = receiver;
-    }
-
     public OrderDetails getOrder() {
         return order;
-    }
-
-    public void setOrder(OrderDetails order) {
-        this.order = order;
     }
 }

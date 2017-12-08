@@ -88,13 +88,8 @@ public class StorageManager {
 
         // mock some delivering delay
         Thread.sleep(1000 * ThreadLocalRandom.current().nextInt(2, 10));
-//        Thread.sleep(1000 * 5);
 
         return 0;
-    }
-
-    public JPanel getMainForm() {
-        return mainForm;
     }
 
     public void setMainForm(MainForm mainForm) {

@@ -192,6 +192,19 @@ public class MainForm extends JPanel {
         this.repaint();
     }
 
+    public JTextArea findTextArea(String name) {
+        for(JTextArea textArea : productsTextBoxes) {
+            if(textArea.getName().equals(name)) {
+                return textArea;
+            }
+        }
+        return null;
+    }
+
+    //
+    // UI HANDLERS
+    //
+
     public void handleDeliveringDoneOnUI(Message<Manufacturer, StorageManager> data) {
         synchronized (this) {
             JTextArea textArea = findTextArea(data.getSender().getManufacturerName());
@@ -209,15 +222,6 @@ public class MainForm extends JPanel {
             );
             drawManufacturersValuesTextAreas();
         }
-    }
-
-    public JTextArea findTextArea(String name) {
-        for(JTextArea textArea : productsTextBoxes) {
-            if(textArea.getName().equals(name)) {
-                return textArea;
-            }
-        }
-        return null;
     }
 
     public void handleSendRequest(String manufacturerName, String productName) {

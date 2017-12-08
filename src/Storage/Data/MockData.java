@@ -15,7 +15,7 @@ public final class MockData {
         ArrayList<Manufacturer> manufacturers = new ArrayList<Manufacturer>();
         try {
             String filePath = new File("").getAbsolutePath();
-            filePath +=("\\JavaGUIProject\\src\\Storage\\Data\\Orders.json");
+            filePath +=("/src/Storage/Data/Orders.json");
             manufacturers = gson.fromJson(new FileReader(filePath), new TypeToken<ArrayList<Manufacturer>>(){}.getType());
         } catch (FileNotFoundException e) {
             e.printStackTrace();

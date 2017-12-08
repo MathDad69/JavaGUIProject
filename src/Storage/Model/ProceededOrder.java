@@ -15,16 +15,8 @@ public class ProceededOrder {
         return order;
     }
 
-    public void setOrder(OrderDetails order) {
-        this.order = order;
-    }
-
     public int getSatisfiedAmount() {
         return satisfiedAmount;
-    }
-
-    public void setSatisfiedAmount(int satisfiedAmount) {
-        this.satisfiedAmount = satisfiedAmount;
     }
 
     public void addToSatisfiedAmount(int amount) {
@@ -33,10 +25,6 @@ public class ProceededOrder {
 
     public void addToDeliveredAmount(int amount) {
         this.deliveredAmount += amount;
-    }
-
-    public boolean isFullySatisfied() {
-        return this.satisfiedAmount == this.order.getAmount();
     }
 
     public int getDeliveredAmount() {

@@ -16,25 +16,16 @@ public class Manufacturer {
         return products;
     }
 
-    public void setProducts(Map<String, Integer> products) {
-        this.products = products;
-    }
-
     public String getManufacturerName() {
         return manufacturerName;
-    }
-
-    public void setManufacturerName(String manufacturerName) {
-        this.manufacturerName = manufacturerName;
     }
 
     public void proceedOrder(String productName, StorageManager storage, String orderGUID) throws InterruptedException {
         synchronized (this) {
             // mock some delivering delay
             Thread.sleep(1000 * ThreadLocalRandom.current().nextInt(2, 10));
-//            Thread.sleep(1000 * 5);
 
-            Message<Manufacturer, StorageManager> response = new Message<Manufacturer, StorageManager>(
+            Message<Manufacturer, StorageManager> response = new Message<>(
                     this,
                     storage,
                     new OrderDetails(productName, products.getOrDefault(productName, 0))
@@ -51,11 +42,8 @@ public class Manufacturer {
     public void deliverProduct(String productName, int amount, StorageManager storage, String guid) throws InterruptedException {
         products.put(productName, products.get(productName) - amount);
 
-//        // mock some delivering delay
-//        Thread.sleep(1000 * ThreadLocalRandom.current().nextInt(2, 10));
-
         // send response
-        Message<Manufacturer, StorageManager> response = new Message<Manufacturer, StorageManager>(
+        Message<Manufacturer, StorageManager> response = new Message<>(
                 this,
                 storage,
                 new OrderDetails(productName, amount)

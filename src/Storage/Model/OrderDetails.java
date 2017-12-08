@@ -15,23 +15,11 @@ public class OrderDetails {
         return productName;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
     public int getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
-
     public String getOrderGUID() {
         return orderGUID;
-    }
-
-    public void setOrderGUID(String orderGUID) {
-        this.orderGUID = orderGUID;
     }
 }

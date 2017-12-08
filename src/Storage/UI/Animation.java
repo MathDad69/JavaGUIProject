@@ -51,7 +51,7 @@ public class Animation {
     }
     private void AddComponent(JPanel jPanel , String text){
         component = new JLabel();
-        component.setBounds(_x, _y, 10, 10);
+        component.setBounds(_x, _y, 400, 10);
         component.setForeground(this.color);
         ((JLabel) component).setText(text);
         jPanel.add(component);
@@ -64,7 +64,7 @@ public class Animation {
         } else {
             this._x += this._velX;
             this._y += this._velY;
-            component.setBounds(_x, _y, 200, 50);
+            component.setBounds(_x, _y, 400, 50);
             return true;
         }
     }
