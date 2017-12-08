@@ -1,12 +1,10 @@
 package Storage.UI;
 
 import Storage.Data.MockData;
-import Storage.Model.Manufacturer;
-import Storage.Model.Message;
-import Storage.Model.OrderDetails;
-import Storage.Model.StorageManager;
+import Storage.Model.*;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Map;
@@ -18,6 +16,7 @@ public class MainForm extends JPanel {
     private ArrayList<JTextField> textBoxes = new ArrayList<JTextField>();
     private ArrayList<JTextField> orderTextBoxes = new ArrayList<JTextField>();
     private ArrayList<JTextArea> productsTextBoxes = new ArrayList<JTextArea>();
+    private JTextArea summaryTextArea;
 
     public MainForm(){
         setBackground(Constants.BACKGROUND_Color);
@@ -26,6 +25,49 @@ public class MainForm extends JPanel {
         this.setLayout(null);
         createCustomersControls();
         drawManufacturersValuesTextAreas();
+    }
+
+    private void updateSummaryTextArea() {
+        synchronized (this) {
+            if (summaryTextArea != null) {
+                this.remove(summaryTextArea);
+                summaryTextArea = null;
+            }
+
+            summaryTextArea = new JTextArea();
+            summaryTextArea.setEditable(false);
+            summaryTextArea.setBackground(Constants.BACKGROUND_Color);
+            summaryTextArea.setBounds(800,
+                    20,
+                    380,
+                    Constants.FROM_HEIGHT - 40);
+            summaryTextArea.setText(generateOrdersSummary());
+            Border border = BorderFactory.createLineBorder(Color.BLACK);
+            summaryTextArea.setBorder(BorderFactory.createCompoundBorder(border,
+                    BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+            this.add(summaryTextArea);
+
+            this.revalidate();
+            this.repaint();
+        }
+    }
+
+    private String generateOrdersSummary() {
+        String result = "";
+        ArrayList<ProceededOrder> orders = StorageManager.getManager().getOrders();
+
+        for(int i = 0; i < orders.size(); i++) {
+            OrderDetails order = orders.get(i).getOrder();
+
+            result += ("[ORDER]     - " + order.getOrderGUID() + "\n");
+            result += ("[PRODUCT]   - " + order.getProductName() + "\n");
+            result += ("[AMOUNT]    - " + order.getAmount() + "\n");
+            result += ("[AVAILABLE] - " + orders.get(i).getSatisfiedAmount() + "\n");
+            result += ("[DELIVERED] - " + orders.get(i).getDeliveredAmount() + "\n");
+            result += ("============================================================ \n");
+        }
+
+        return result;
     }
 
     public void createCustomersControls() {
@@ -143,25 +185,30 @@ public class MainForm extends JPanel {
 
             drawingParam += Constants.DRAWING_PARAM_BUFFER;
         }
+
+        updateSummaryTextArea();
+
         this.revalidate();
         this.repaint();
     }
 
     public void handleDeliveringDoneOnUI(Message<Manufacturer, StorageManager> data) {
-        drawManufacturersValuesTextAreas();
-        JTextArea textArea = findTextArea(data.getSender().getManufacturerName());
-        Animation animation = new Animation(
-            this,
-            textArea.getLocation().x + textArea.getWidth()/2,
-            Constants.RECTANGLE_MANUFACTURERS_Y + Constants.RECTANGLE_HEIGHT/2,
-            Constants.STORAGE_X + Constants.STORAGE_WIDTH/2,
-            Constants.STORAGE_Y + Constants.STORAGE_HEIGHT/2,
-            "[DELIVER] " + data.getOrder().getProductName() + " : "  + data.getOrder().getAmount(),
-            StorageManager.getManager(),
-            false,
-            null,
-            BLUE
-        );
+        synchronized (this) {
+            JTextArea textArea = findTextArea(data.getSender().getManufacturerName());
+            Animation animation = new Animation(
+                this,
+                textArea.getLocation().x + textArea.getWidth()/2,
+                Constants.RECTANGLE_MANUFACTURERS_Y + Constants.RECTANGLE_HEIGHT/2,
+                Constants.STORAGE_X + Constants.STORAGE_WIDTH/2,
+                Constants.STORAGE_Y + Constants.STORAGE_HEIGHT/2,
+                "[DELIVER] " + data.getOrder().getProductName() + " : "  + data.getOrder().getAmount(),
+                StorageManager.getManager(),
+                false,
+                null,
+                BLUE
+            );
+            drawManufacturersValuesTextAreas();
+        }
     }
 
     public JTextArea findTextArea(String name) {
@@ -174,52 +221,59 @@ public class MainForm extends JPanel {
     }
 
     public void handleSendRequest(String manufacturerName, String productName) {
-        JTextArea textArea = findTextArea(manufacturerName);
-        Animation animation =  new Animation(
-            this,
-            Constants.STORAGE_X + Constants.STORAGE_WIDTH/2,
-            Constants.STORAGE_Y + Constants.STORAGE_HEIGHT/2,
-            textArea.getLocation().x + textArea.getWidth()/2,
-            Constants.RECTANGLE_MANUFACTURERS_Y + Constants.RECTANGLE_HEIGHT/2,
-            "[REQUEST] - " + productName,
-            StorageManager.getManager(),
-            false,
-            null,
-            MAGENTA
-        );
+        synchronized (this) {
+            JTextArea textArea = findTextArea(manufacturerName);
+            Animation animation =  new Animation(
+                this,
+                Constants.STORAGE_X + Constants.STORAGE_WIDTH/2,
+                Constants.STORAGE_Y + Constants.STORAGE_HEIGHT/2,
+                textArea.getLocation().x + textArea.getWidth()/2,
+                Constants.RECTANGLE_MANUFACTURERS_Y + Constants.RECTANGLE_HEIGHT/2,
+                "[REQUEST] - " + productName,
+                StorageManager.getManager(),
+                false,
+                null,
+                MAGENTA
+            );
+            drawManufacturersValuesTextAreas();
+        }
     }
 
     public void handleAvailabilityResponseUI(Message<Manufacturer, StorageManager> response) {
-        JTextArea textArea = findTextArea(response.getSender().getManufacturerName());
-
-        Animation animation =  new Animation(
-            this,
-            textArea.getLocation().x + textArea.getWidth()/2,
-            Constants.RECTANGLE_MANUFACTURERS_Y + Constants.RECTANGLE_HEIGHT/2,
-            Constants.STORAGE_X + Constants.STORAGE_WIDTH/2,
-            Constants.STORAGE_Y + Constants.STORAGE_HEIGHT/2,
-            "[RESPONSE] - " + response.getOrder().getProductName() + " {" + response.getOrder().getAmount() + "} ",
-            StorageManager.getManager(),
-            false,
-            null,
-            response.getOrder().getAmount() == 0 ? RED : GREEN
-        );
+        synchronized (this) {
+            JTextArea textArea = findTextArea(response.getSender().getManufacturerName());
+            Animation animation =  new Animation(
+                this,
+                textArea.getLocation().x + textArea.getWidth()/2,
+                Constants.RECTANGLE_MANUFACTURERS_Y + Constants.RECTANGLE_HEIGHT/2,
+                Constants.STORAGE_X + Constants.STORAGE_WIDTH/2,
+                Constants.STORAGE_Y + Constants.STORAGE_HEIGHT/2,
+                "[RESPONSE] - " + response.getOrder().getProductName() + " {" + response.getOrder().getAmount() + "} ",
+                StorageManager.getManager(),
+                false,
+                null,
+                response.getOrder().getAmount() == 0 ? RED : GREEN
+            );
+            drawManufacturersValuesTextAreas();
+        }
     }
 
     public void handleGiveMeProductUI(String manufacturerName, String product, int amount) {
-        JTextArea textArea = findTextArea(manufacturerName);
-
-        Animation animation =  new Animation(
-            this,
-            Constants.STORAGE_X + Constants.STORAGE_WIDTH/2,
-            Constants.STORAGE_Y + Constants.STORAGE_HEIGHT/2,
-            textArea.getLocation().x + textArea.getWidth()/2,
-            Constants.RECTANGLE_MANUFACTURERS_Y + Constants.RECTANGLE_HEIGHT/2,
-            "[GIVE ME] - " + product + " {" + amount + "} ",
-            StorageManager.getManager(),
-            false,
-            null,
-            ORANGE
-        );
+        synchronized (this) {
+            JTextArea textArea = findTextArea(manufacturerName);
+            Animation animation =  new Animation(
+                this,
+                Constants.STORAGE_X + Constants.STORAGE_WIDTH/2,
+                Constants.STORAGE_Y + Constants.STORAGE_HEIGHT/2,
+                textArea.getLocation().x + textArea.getWidth()/2,
+                Constants.RECTANGLE_MANUFACTURERS_Y + Constants.RECTANGLE_HEIGHT/2,
+                "[GIVE ME] - " + product + " {" + amount + "} ",
+                StorageManager.getManager(),
+                false,
+                null,
+                amount == 0 ? GRAY : ORANGE
+            );
+            drawManufacturersValuesTextAreas();
+        }
     }
 }

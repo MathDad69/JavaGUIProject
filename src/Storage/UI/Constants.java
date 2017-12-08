@@ -4,7 +4,7 @@ import java.awt.*;
 
 public final class Constants {
     public static Color BACKGROUND_Color = Color.white;
-    public static int FORM_WIDTH = 700;
+    public static int FORM_WIDTH = 1200;
     public static int FROM_HEIGHT = 700;
 
     public static int ITEMS_COUNT = 3;

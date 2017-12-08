@@ -38,27 +38,17 @@ public class StorageManager {
         }
     }
 
-    private void deliverItemsFromManufacturers(ArrayList<Message<StorageManager, Manufacturer>> requests) {
-        for (int i = 0; i < requests.size(); i++) {
-            final int requestIndex = i;
-
-            new Thread(() -> {
-                try {
-                    requests.get(requestIndex)
-                        .getReceiver()
-                        .deliverProduct(
-                            requests.get(requestIndex).getOrder().getProductName(),
-                            requests.get(requestIndex).getOrder().getAmount(),
-                            this
-                        );
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }).start();
+    public void receiveDeliveringResponse(Message<Manufacturer, StorageManager> response, String orderGUID) throws InterruptedException {
+        ProceededOrder order = null;
+        for(int i = 0; i < this.orders.size(); i++) {
+            if (Objects.equals(this.orders.get(i).getOrder().getOrderGUID(), orderGUID)) {
+                order = this.orders.get(i);
+                break;
+            }
         }
-    }
 
-    public void receiveDeliveringResponse(Message<Manufacturer, StorageManager> response) {
+        order.addToDeliveredAmount(response.getOrder().getAmount());
+        Thread.sleep(1000);
         this.mainForm.handleDeliveringDoneOnUI(response);
     }
 
