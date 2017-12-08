@@ -13,7 +13,7 @@ import static java.awt.Color.*;
 
 
 public class MainForm extends JPanel {
-    private ArrayList<JTextField> textBoxes = new ArrayList<JTextField>();
+    private ArrayList<JComboBox> comboBoxes = new ArrayList<JComboBox>();
     private ArrayList<JTextField> orderTextBoxes = new ArrayList<JTextField>();
     private ArrayList<JTextArea> productsTextBoxes = new ArrayList<JTextArea>();
     private JTextArea summaryTextArea;
@@ -25,6 +25,9 @@ public class MainForm extends JPanel {
         this.setLayout(null);
         createCustomersControls();
         drawManufacturersValuesTextAreas();
+        ImageIcon icon = new ImageIcon("background.jpg");
+        JLabel thumb = new JLabel();
+        thumb.setIcon(icon);
     }
 
     private void updateSummaryTextArea() {
@@ -91,17 +94,19 @@ public class MainForm extends JPanel {
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        g.drawImage(new ImageIcon("bg.jpg").getImage(), 0, 0, null);
         DrawingHelper.drawStorage(g);
         DrawingHelper.drawItems(g, Constants.RECTANGLE_CUSTOMERS_Y);
         DrawingHelper.drawItems(g, Constants.RECTANGLE_MANUFACTURERS_Y);
         DrawingHelper.drawLabels(g);
         DrawingHelper.drawManufacturersNames(g);
         DrawingHelper.drawCustomersNames(g);
+
     }
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Storage");
-        frame.setBackground(Constants.BACKGROUND_Color);
+        frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(new MainForm());
         frame.setSize(Constants.FORM_WIDTH, Constants.FROM_HEIGHT);
@@ -109,9 +114,9 @@ public class MainForm extends JPanel {
     }
 
     private OrderDetails getNewOrder(String buttonNumber) {
-        JTextField textBox = textBoxes.get(Integer.valueOf(buttonNumber));
+        JComboBox textBox = comboBoxes.get(Integer.valueOf(buttonNumber));
         JTextField orderTextBox = orderTextBoxes.get(Integer.valueOf(buttonNumber));
-        return new OrderDetails(textBox.getText(), Integer.valueOf(orderTextBox.getText()));
+        return new OrderDetails((String)textBox.getSelectedItem(), Integer.valueOf(orderTextBox.getText()));
     }
 
     private JButton createNewButton(JPanel panel, int drawingParam, int elementIndex) {
@@ -139,14 +144,14 @@ public class MainForm extends JPanel {
         return newButton;
     }
 
-    private JTextField createNewOrderNameField(int drawingParam, int elementIndex) {
-        JTextField newTextBox = new JTextField();
+    private JComboBox createNewOrderNameField(int drawingParam, int elementIndex) {
+        JComboBox newTextBox = new JComboBox<String>(MockData.getProductNames());
         newTextBox.setName(Integer.toString(elementIndex));
         newTextBox.setBounds(drawingParam,
                 Constants.ORDER_NAME_FIELD_Y,
                 Constants.TEXT_FIELD_WIDTH,
                 Constants.TEXT_FIELD_HEIGHT);
-        textBoxes.add(newTextBox);
+        comboBoxes.add(newTextBox);
 
         return newTextBox;
     }

@@ -32,4 +32,16 @@ public final class MockData {
 
         return customers;
     }
+
+    public static String[] getProductNames() {
+        String[] products = new String[5];
+        products[0] = "Wardrobe";
+        products[1] = "Processor";
+        products[2] = "VideoCard";
+        products[3] = "i2 Notebook";
+        products[4] = "Kit-Kat";
+        return products;
+    }
+
+
 }
